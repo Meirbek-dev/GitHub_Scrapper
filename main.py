@@ -32,24 +32,24 @@ class Main(QtWidgets.QDialog):
             user_repositories = github_user + "?tab=repositories"
             sauce = urlopen(user_repositories).read()
             soup = BeautifulSoup(sauce, 'lxml')
-            arr = [0]
+            repo_arr = [0]
             tags = soup.find_all('a', itemprop="name codeRepository")
             for tag in tags:
                 if tag.text != "":
-                    arr.append(tag.text.lstrip())
+                    repo_arr.append(tag.text.lstrip())
             k = 2
-            while len(arr) <= repo_amount:
-                url3 = 'https://github.com/' + "?page=" + str(k) + "&tab=repositories"
+            while len(repo_arr) <= repo_amount:
+                repo_tab_url = 'https://github.com/' + "?page=" + str(k) + "&tab=repositories"
                 k += 1
-                sauce = urlopen(url3).read()
+                sauce = urlopen(repo_tab_url).read()
                 soup = BeautifulSoup(sauce, 'lxml')
                 tags = soup.find_all('a', itemprop="name codeRepository")
                 for tag in tags:
                     if tag.text != "":
-                        arr.append(tag.text.lstrip())
-            for i in range(1, len(arr)):
-                h1 = str(i) + ". " + str(arr[i])
-                self.textEdit_info.append(h1)
+                        repo_arr.append(tag.text.lstrip())
+            for i in range(1, len(repo_arr)):
+                header = str(i) + ". " + str(repo_arr[i])
+                self.textEdit_info.append(header)
             self.label_status.setText("Данные загружены")
             self.label_status.setStyleSheet('color: rgb(0, 200, 0); font: bold')
             QtWidgets.QApplication.restoreOverrideCursor()
