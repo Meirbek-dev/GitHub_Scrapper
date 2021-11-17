@@ -20,17 +20,17 @@ class Main(QtWidgets.QDialog):
 
     def scrap(self):
         try:
-            self.label_status.setText('Данные загружаются')
+            self.label_status.setText("Данные загружаются")
             QtWidgets.QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)  # Изменение формы курсора
-            self.label_status.setStyleSheet('color: rgb(100, 100, 100); font: bold')
+            self.label_status.setStyleSheet('color: rgb(100, 100, 100); bold')
             username = str(self.lineEdit_username.text())
-            url = "https://github.com/" + username
-            sauce = urlopen(url).read()
+            github_user = 'https://github.com/' + username
+            sauce = urlopen(github_user).read()
             soup = BeautifulSoup(sauce, 'lxml')  # lxml это парсер
             repo_amount = int(soup.find('span', class_='Counter').text)
             self.textEdit_info.setText("Количество репозиториев: " + str(repo_amount))
-            url2 = url + "?tab=repositories"
-            sauce = urlopen(url2).read()
+            user_repositories = github_user + "?tab=repositories"
+            sauce = urlopen(user_repositories).read()
             soup = BeautifulSoup(sauce, 'lxml')
             arr = [0]
             tags = soup.find_all('a', itemprop="name codeRepository")
@@ -39,7 +39,7 @@ class Main(QtWidgets.QDialog):
                     arr.append(tag.text.lstrip())
             k = 2
             while len(arr) <= repo_amount:
-                url3 = url + "?page=" + str(k) + "&tab=repositories"
+                url3 = 'https://github.com/' + "?page=" + str(k) + "&tab=repositories"
                 k += 1
                 sauce = urlopen(url3).read()
                 soup = BeautifulSoup(sauce, 'lxml')
@@ -50,7 +50,7 @@ class Main(QtWidgets.QDialog):
             for i in range(1, len(arr)):
                 h1 = str(i) + ". " + str(arr[i])
                 self.textEdit_info.append(h1)
-            self.label_status.setText('Данные загружены')
+            self.label_status.setText("Данные загружены")
             self.label_status.setStyleSheet('color: rgb(0, 200, 0); font: bold')
             QtWidgets.QApplication.restoreOverrideCursor()
         except Exception:
