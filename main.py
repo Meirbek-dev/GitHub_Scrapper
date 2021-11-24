@@ -19,7 +19,6 @@ class Main(QtWidgets.QDialog):
 
     def scrap(self):
         try:
-            self.label_status.setText("Данные загружаются")
             QtWidgets.QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)  # Изменение формы курсора
             self.label_status.setStyleSheet('color: rgb(100, 100, 100); bold')  # Установка стиля (цвета и жариности)
             username = str(self.lineEdit_username.text())
@@ -33,12 +32,9 @@ class Main(QtWidgets.QDialog):
             repo_arr = [0]
             #  Находит все компоненты <a>, со свойством itemprop="name codeRepository"
             tags = soup.find_all('a', itemprop="name codeRepository")
-            for tag in tags:
-                repo_arr.append(tag.text.lstrip())
             while len(repo_arr) <= repo_amount:
-                tags = soup.find_all('a', itemprop="name codeRepository")
                 for tag in tags:
-                    repo_arr.append(tag.text.lstrip())
+                    repo_arr.append(tag.text.lstrip())  # Убирает лишние пробелы и переносы строк слева от тэгов
             for i in range(1, len(repo_arr)):
                 header = str(i) + ". " + str(repo_arr[i])
                 self.textEdit_info.append(header)
