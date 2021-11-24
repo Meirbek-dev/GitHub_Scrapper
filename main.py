@@ -1,7 +1,6 @@
 import sys
-# noinspection PyCompatibility
-from urllib.request import urlopen  # Для загрузки содержимого страницы с заданного URL
 
+import requests  # Для загрузки содержимого страницы с заданного URL
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt
 from PyQt6.uic import loadUi
@@ -22,31 +21,24 @@ class Main(QtWidgets.QDialog):
         try:
             self.label_status.setText("Данные загружаются")
             QtWidgets.QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)  # Изменение формы курсора
-            self.label_status.setStyleSheet('color: rgb(100, 100, 100); bold')
+            self.label_status.setStyleSheet('color: rgb(100, 100, 100); bold')  # Установка стиля (цвета и жариности)
             username = str(self.lineEdit_username.text())
-            github_user = 'https://github.com/' + username
-            sauce = urlopen(github_user).read()
-            soup = BeautifulSoup(sauce, 'lxml')  # lxml это парсер
+            # Ссылка на страницу с репозиториями пользователя
+            user_repositories = 'https://github.com/' + username + "?tab=repositories"
+            sauce = requests.get(user_repositories)  # Метод get() отправляет GET-запрос на указанный url.
+            soup = BeautifulSoup(sauce.text, 'lxml')  # lxml это парсер
+            # Возврат содержимого из компонента разметки "span" и класса "Counter"
             repo_amount = int(soup.find('span', class_='Counter').text)
             self.textEdit_info.setText("Количество репозиториев: " + str(repo_amount))
-            user_repositories = github_user + "?tab=repositories"
-            sauce = urlopen(user_repositories).read()
-            soup = BeautifulSoup(sauce, 'lxml')
             repo_arr = [0]
+            #  Находит все компоненты <a>, со свойством itemprop="name codeRepository"
             tags = soup.find_all('a', itemprop="name codeRepository")
             for tag in tags:
-                if tag.text != "":
-                    repo_arr.append(tag.text.lstrip())
-            k = 2
+                repo_arr.append(tag.text.lstrip())
             while len(repo_arr) <= repo_amount:
-                repo_tab_url = 'https://github.com/' + "?page=" + str(k) + "&tab=repositories"
-                k += 1
-                sauce = urlopen(repo_tab_url).read()
-                soup = BeautifulSoup(sauce, 'lxml')
                 tags = soup.find_all('a', itemprop="name codeRepository")
                 for tag in tags:
-                    if tag.text != "":
-                        repo_arr.append(tag.text.lstrip())
+                    repo_arr.append(tag.text.lstrip())
             for i in range(1, len(repo_arr)):
                 header = str(i) + ". " + str(repo_arr[i])
                 self.textEdit_info.append(header)
